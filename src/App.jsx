@@ -127,6 +127,41 @@ function SongViewer({ song, onBack }) {
   const [showChordPopup, setShowChordPopup] = useState(null);
   const [transpose, setTranspose] = useState(0);
   const NOTES = ["C","C#","D","D#","E","F","F#","G","G#","A","A#","B"];
+  // Metronome state
+  const pattern = STRUMMING_PATTERNS.find(p => p.id === song.patternId) || STRUMMING_PATTERNS[0];
+  const [metPlaying, setMetPlaying] = useState(false);
+  const [metBeat, setMetBeat] = useState(-1);
+  const [metBpm, setMetBpm] = useState(song.bpm || pattern.bpm);
+  const metInterval = useRef(null);
+  const metAudio = useRef(null);
+  const metClick = useCallback((accent) => {
+    if (!metAudio.current) metAudio.current = new (window.AudioContext || window.webkitAudioContext)();
+    const ctx = metAudio.current;
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.connect(gain); gain.connect(ctx.destination);
+    osc.frequency.value = accent ? 1000 : 700;
+    gain.gain.setValueAtTime(accent ? 0.15 : 0.08, ctx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.08);
+    osc.start(ctx.currentTime); osc.stop(ctx.currentTime + 0.08);
+  }, []);
+  useEffect(() => {
+    if (metPlaying) {
+      const beatMs = (60000 / metBpm) / (pattern.pattern.length / 4);
+      let beat = 0;
+      setMetBeat(0);
+      metInterval.current = setInterval(() => {
+        beat = (beat + 1) % pattern.pattern.length;
+        setMetBeat(beat);
+        if (pattern.pattern[beat] !== "_") metClick(pattern.pattern[beat] === "D");
+      }, beatMs);
+      metClick(true);
+    } else {
+      clearInterval(metInterval.current);
+      setMetBeat(-1);
+    }
+    return () => clearInterval(metInterval.current);
+  }, [metPlaying, metBpm, pattern, metClick]);
   const transposeChord = (chord) => {
     if (transpose===0) return chord;
     const match = chord.match(/^([A-G]#?)(.*)/);
@@ -168,6 +203,50 @@ function SongViewer({ song, onBack }) {
             <button onClick={()=>setTranspose(t=>t-1)} style={{ background:"none", border:"1px solid #555", borderRadius:4, color:"#e8d5b5", width:22, height:22, cursor:"pointer", fontSize:12 }}>-</button>
             <span style={{ fontSize:11, color:"#e8d5b5", minWidth:16, textAlign:"center" }}>{transpose>0?`+${transpose}`:transpose}</span>
             <button onClick={()=>setTranspose(t=>t+1)} style={{ background:"none", border:"1px solid #555", borderRadius:4, color:"#e8d5b5", width:22, height:22, cursor:"pointer", fontSize:12 }}>+</button>
+          </div>
+        </div>
+        {/* Strum pattern & metronome */}
+        <div style={{ marginTop:8, background:"rgba(255,255,255,0.03)", borderRadius:10, padding:"8px 10px", border:"1px solid rgba(255,255,255,0.06)" }}>
+          <div style={{ display:"flex", alignItems:"center", justifyContent:"space-between", marginBottom:6 }}>
+            <div style={{ display:"flex", alignItems:"center", gap:6 }}>
+              <span style={{ fontSize:11, fontWeight:700, color:"#d4956a" }}>{pattern.name}</span>
+              <span style={{ fontSize:10, color:"#666" }}>strum</span>
+            </div>
+            <div style={{ display:"flex", alignItems:"center", gap:4 }}>
+              <button onClick={()=>setMetBpm(b=>Math.max(40,b-5))} style={{ background:"none", border:"1px solid #444", borderRadius:4, color:"#e8d5b5", width:20, height:20, cursor:"pointer", fontSize:10, padding:0, lineHeight:"18px" }}>-</button>
+              <span style={{ fontSize:11, fontWeight:700, fontFamily:"'JetBrains Mono',monospace", color:"#e8d5b5", minWidth:24, textAlign:"center" }}>{metBpm}</span>
+              <button onClick={()=>setMetBpm(b=>Math.min(200,b+5))} style={{ background:"none", border:"1px solid #444", borderRadius:4, color:"#e8d5b5", width:20, height:20, cursor:"pointer", fontSize:10, padding:0, lineHeight:"18px" }}>+</button>
+              <span style={{ fontSize:9, color:"#666" }}>bpm</span>
+            </div>
+          </div>
+          <div style={{ display:"flex", alignItems:"center", gap:4 }}>
+            <button onClick={()=>setMetPlaying(!metPlaying)} style={{
+              width:28, height:28, borderRadius:14, border:"none", cursor:"pointer", flexShrink:0,
+              background:metPlaying?"#d46a6a":"#d4956a", color:"#1a1612",
+              fontWeight:700, fontSize:11, display:"flex", alignItems:"center", justifyContent:"center",
+            }}>{metPlaying?"■":"▶"}</button>
+            <div style={{ display:"flex", gap:2, flex:1, justifyContent:"center" }}>
+              {pattern.pattern.map((beat, i) => {
+                const isActive = i === metBeat;
+                const isDown = beat === "D", isUp = beat === "U", isMute = beat === "X", isRest = beat === "_";
+                return (
+                  <div key={i} style={{
+                    width:28, height:36, borderRadius:6,
+                    background: isActive ? (isDown?"#d4956a":isUp?"#6abed4":isMute?"#d46a6a":"rgba(255,255,255,0.05)") : "rgba(255,255,255,0.03)",
+                    border: `1.5px solid ${isActive?"#e8d5b5":"rgba(255,255,255,0.06)"}`,
+                    display:"flex", flexDirection:"column", alignItems:"center", justifyContent:"center",
+                    transition:"all 0.08s", transform:isActive?"scale(1.1)":"scale(1)",
+                  }}>
+                    <span style={{ fontSize:14, color:isRest?"#333":"#e8d5b5", lineHeight:1 }}>
+                      {isDown?"↓":isUp?"↑":isMute?"✕":"·"}
+                    </span>
+                    <span style={{ fontSize:7, color:"#666", marginTop:1 }}>
+                      {isDown?"D":isUp?"U":isMute?"X":"-"}
+                    </span>
+                  </div>
+                );
+              })}
+            </div>
           </div>
         </div>
       </div>
@@ -215,6 +294,8 @@ function SongEditor({ onSave, onCancel, song: editingSong }) {
   const [title, setTitle] = useState(editingSong?.title || "");
   const [artist, setArtist] = useState(editingSong?.artist || "");
   const [capo, setCapo] = useState(editingSong?.capo || 0);
+  const [patternId, setPatternId] = useState(editingSong?.patternId || 2);
+  const [bpm, setBpm] = useState(editingSong?.bpm || 80);
   const [rawText, setRawText] = useState("");
   useEffect(() => {
     if (editingSong?.sections) {
@@ -264,7 +345,7 @@ function SongEditor({ onSave, onCancel, song: editingSong }) {
     return {
       id: editingSong?.id || `custom-${Date.now()}`,
       title: title || "Untitled", artist: artist || "Unknown",
-      capo: parseInt(capo) || 0, difficulty: 2, patternId: 2, bpm: 80,
+      capo: parseInt(capo) || 0, difficulty: 2, patternId: parseInt(patternId), bpm: parseInt(bpm) || 80,
       sections, custom: true,
     };
   };
@@ -282,9 +363,34 @@ function SongEditor({ onSave, onCancel, song: editingSong }) {
       </div>
       <input placeholder="Song title" value={title} onChange={e=>setTitle(e.target.value)} style={inputStyle} />
       <input placeholder="Artist" value={artist} onChange={e=>setArtist(e.target.value)} style={inputStyle} />
-      <div style={{ display:"flex", gap:8, alignItems:"center" }}>
-        <span style={{ color:"#888", fontSize:13 }}>Capo:</span>
-        <input type="number" min={0} max={12} value={capo} onChange={e=>setCapo(e.target.value)} style={{ ...inputStyle, width:60 }} />
+      <div style={{ display:"flex", gap:12, alignItems:"center", flexWrap:"wrap" }}>
+        <div style={{ display:"flex", gap:8, alignItems:"center" }}>
+          <span style={{ color:"#888", fontSize:13 }}>Capo:</span>
+          <input type="number" min={0} max={12} value={capo} onChange={e=>setCapo(e.target.value)} style={{ ...inputStyle, width:60 }} />
+        </div>
+        <div style={{ display:"flex", gap:8, alignItems:"center" }}>
+          <span style={{ color:"#888", fontSize:13 }}>BPM:</span>
+          <input type="number" min={40} max={200} value={bpm} onChange={e=>setBpm(e.target.value)} style={{ ...inputStyle, width:60 }} />
+        </div>
+      </div>
+      <div>
+        <span style={{ color:"#888", fontSize:13, marginBottom:6, display:"block" }}>Strum pattern:</span>
+        <div style={{ display:"flex", flexWrap:"wrap", gap:6 }}>
+          {STRUMMING_PATTERNS.map(p => (
+            <button key={p.id} onClick={()=>{setPatternId(p.id);setBpm(p.bpm);}} style={{
+              padding:"4px 10px", borderRadius:8, fontSize:11, cursor:"pointer",
+              border:"1px solid", fontFamily:"'JetBrains Mono',monospace",
+              borderColor:patternId===p.id?"#d4956a":"rgba(255,255,255,0.1)",
+              background:patternId===p.id?"rgba(212,149,106,0.15)":"transparent",
+              color:patternId===p.id?"#d4956a":"#888",
+            }}>
+              {p.name}
+              <span style={{ marginLeft:4, fontSize:9, color:"#666" }}>
+                {p.pattern.map(b=>b==="D"?"↓":b==="U"?"↑":b==="X"?"✕":"·").join("")}
+              </span>
+            </button>
+          ))}
+        </div>
       </div>
       <div style={{ fontSize:11, color:"#888", lineHeight:1.5 }}>
         Format: Use [Section Name] for sections. Put chords on their own line above lyrics.
@@ -490,7 +596,12 @@ export default function App() {
                     {song.custom && <button onClick={e=>{e.stopPropagation();deleteSong(song.id);}} style={{ background:"none", border:"none", color:"#d46a6a", cursor:"pointer", fontSize:14, padding:"2px 4px" }}>✕</button>}
                   </div>
                 </div>
-                <div style={{ display:"flex", gap:4, marginTop:6, flexWrap:"wrap" }}>
+                <div style={{ display:"flex", gap:4, marginTop:6, flexWrap:"wrap", alignItems:"center" }}>
+                  {(() => { const p = STRUMMING_PATTERNS.find(p=>p.id===song.patternId); return p ? (
+                    <span style={{ fontSize:10, padding:"1px 6px", borderRadius:4, background:"rgba(106,190,212,0.1)", color:"#6abed4", marginRight:2 }}>
+                      {p.name} · {song.bpm}bpm
+                    </span>
+                  ) : null; })()}
                   {[...new Set(song.sections.flatMap(s=>s.lines.flatMap(l=>l.chords.map(c=>c.chord))))].map(ch=>(
                     <span key={ch} style={{
                       fontSize:10, padding:"1px 6px", borderRadius:4,
