@@ -1,0 +1,201 @@
+export const SAMPLE_SONGS = [
+  {
+    id: "wonderwall",
+    title: "Wonderwall",
+    artist: "Oasis",
+    capo: 2,
+    difficulty: 2,
+    patternId: 4,
+    bpm: 87,
+    sections: [
+      { type: "verse", label: "Verse 1", lines: [
+        { chords: [{ chord: "Em", pos: 0 }, { chord: "G", pos: 24 }], lyric: "Today is gonna be the day that they're" },
+        { chords: [{ chord: "D", pos: 0 }], lyric: "gonna throw it back to you" },
+        { chords: [{ chord: "Em", pos: 0 }, { chord: "G", pos: 24 }], lyric: "By now you should've somehow realised" },
+        { chords: [{ chord: "D", pos: 0 }], lyric: "what you gotta do" },
+      ]},
+      { type: "chorus", label: "Chorus", lines: [
+        { chords: [{ chord: "C", pos: 0 }, { chord: "D", pos: 18 }], lyric: "And all the roads we have to walk are winding" },
+        { chords: [{ chord: "C", pos: 0 }, { chord: "D", pos: 18 }], lyric: "And all the lights that lead us there are blinding" },
+        { chords: [{ chord: "C", pos: 0 }], lyric: "There are many things that I would" },
+        { chords: [{ chord: "D", pos: 0 }, { chord: "G", pos: 18 }], lyric: "like to say to you but I don't know how" },
+        { chords: [{ chord: "C", pos: 0 }, { chord: "Em", pos: 10 }, { chord: "G", pos: 18 }], lyric: "Because maybe..." },
+        { chords: [{ chord: "Em", pos: 0 }], lyric: "you're gonna be the one that saves me" },
+        { chords: [{ chord: "C", pos: 0 }, { chord: "Em", pos: 10 }, { chord: "G", pos: 18 }], lyric: "And after all..." },
+        { chords: [{ chord: "Em", pos: 0 }], lyric: "you're my wonderwall" },
+      ]},
+    ]
+  },
+  {
+    id: "hallelujah",
+    title: "Hallelujah",
+    artist: "Leonard Cohen",
+    capo: 0,
+    difficulty: 2,
+    patternId: 5,
+    bpm: 56,
+    sections: [
+      { type: "verse", label: "Verse 1", lines: [
+        { chords: [{ chord: "C", pos: 0 }, { chord: "Am", pos: 24 }], lyric: "I've heard there was a secret chord" },
+        { chords: [{ chord: "C", pos: 0 }, { chord: "Am", pos: 24 }], lyric: "That David played and it pleased the Lord" },
+        { chords: [{ chord: "F", pos: 0 }, { chord: "G", pos: 18 }], lyric: "But you don't really care for music" },
+        { chords: [{ chord: "C", pos: 0 }, { chord: "G", pos: 18 }], lyric: "do ya?" },
+        { chords: [{ chord: "C", pos: 0 }, { chord: "F", pos: 10 }, { chord: "G", pos: 18 }], lyric: "It goes like this, the fourth, the fifth" },
+        { chords: [{ chord: "Am", pos: 0 }, { chord: "F", pos: 18 }], lyric: "The minor fall, the major lift" },
+        { chords: [{ chord: "G", pos: 0 }, { chord: "E", pos: 10 }, { chord: "Am", pos: 18 }], lyric: "The baffled king composing" },
+      ]},
+      { type: "chorus", label: "Chorus", lines: [
+        { chords: [{ chord: "F", pos: 0 }], lyric: "Hallelujah" },
+        { chords: [{ chord: "Am", pos: 0 }], lyric: "Hallelujah" },
+        { chords: [{ chord: "F", pos: 0 }], lyric: "Hallelujah" },
+        { chords: [{ chord: "C", pos: 0 }, { chord: "G", pos: 10 }, { chord: "C", pos: 20 }], lyric: "Hallelu-u-u-jah" },
+      ]},
+    ]
+  },
+  {
+    id: "fastcar",
+    title: "Fast Car",
+    artist: "Tracy Chapman",
+    capo: 2,
+    difficulty: 2,
+    patternId: 2,
+    bpm: 105,
+    sections: [
+      { type: "info", label: "Info", lines: [
+        { chords: [], lyric: "Capo 2. Four chords throughout: C G Em D. Verses are fingerpicked (work up to that), chorus is strummed. Great for building right-hand independence." },
+      ]},
+      { type: "verse", label: "Verse 1", lines: [
+        { chords: [{ chord: "C", pos: 0 }, { chord: "G", pos: 20 }], lyric: "You got a fast car, and" },
+        { chords: [{ chord: "Em", pos: 0 }, { chord: "D", pos: 20 }], lyric: "I want a ticket to anywhere" },
+        { chords: [{ chord: "C", pos: 0 }, { chord: "G", pos: 20 }], lyric: "Maybe we make a deal" },
+        { chords: [{ chord: "Em", pos: 0 }, { chord: "D", pos: 20 }], lyric: "Maybe together we can get somewhere" },
+        { chords: [{ chord: "C", pos: 0 }, { chord: "G", pos: 20 }], lyric: "Any place is better" },
+        { chords: [{ chord: "Em", pos: 0 }, { chord: "D", pos: 20 }], lyric: "Starting from zero got nothing to lose" },
+        { chords: [{ chord: "C", pos: 0 }, { chord: "G", pos: 20 }], lyric: "Maybe we'll make something, but" },
+        { chords: [{ chord: "Em", pos: 0 }, { chord: "D", pos: 20 }], lyric: "me myself I got nothing to prove" },
+      ]},
+      { type: "chorus", label: "Chorus", lines: [
+        { chords: [{ chord: "C", pos: 0 }], lyric: "So I remember when we were driving," },
+        { chords: [{ chord: "G", pos: 0 }], lyric: "driving in your car" },
+        { chords: [{ chord: "Em", pos: 0 }], lyric: "The speed so fast I felt like I was drunk" },
+        { chords: [{ chord: "D", pos: 0 }], lyric: "City lights lay out before us" },
+        { chords: [{ chord: "C", pos: 0 }, { chord: "Em", pos: 16 }, { chord: "D", pos: 24 }], lyric: "and I had a feeling that I belonged" },
+        { chords: [{ chord: "C", pos: 0 }, { chord: "Em", pos: 16 }, { chord: "D", pos: 24 }], lyric: "and I had a feeling I could be someone" },
+        { chords: [{ chord: "C", pos: 0 }, { chord: "D", pos: 16 }], lyric: "be someone, be someone" },
+      ]},
+    ]
+  },
+  {
+    id: "someoneyouloved",
+    title: "Someone You Loved",
+    artist: "Lewis Capaldi",
+    capo: 1,
+    difficulty: 1,
+    patternId: 2,
+    bpm: 110,
+    sections: [
+      { type: "info", label: "Info", lines: [
+        { chords: [], lyric: "Capo 1. Same four chords the whole song: C G Am F. One of the easiest songs to strum along to — focus on getting the rhythm solid." },
+      ]},
+      { type: "verse", label: "Verse", lines: [
+        { chords: [{ chord: "C", pos: 0 }, { chord: "G", pos: 24 }], lyric: "I'm going under and this time" },
+        { chords: [{ chord: "Am", pos: 0 }, { chord: "F", pos: 24 }], lyric: "I fear there's no one to save me" },
+        { chords: [{ chord: "C", pos: 0 }, { chord: "G", pos: 24 }], lyric: "This all or nothing really got a way" },
+        { chords: [{ chord: "Am", pos: 0 }, { chord: "F", pos: 24 }], lyric: "of driving me crazy" },
+      ]},
+      { type: "verse", label: "Pre-Chorus", lines: [
+        { chords: [{ chord: "C", pos: 0 }], lyric: "I need somebody to heal" },
+        { chords: [{ chord: "G", pos: 0 }], lyric: "Somebody to know" },
+        { chords: [{ chord: "Am", pos: 0 }], lyric: "Somebody to have" },
+        { chords: [{ chord: "F", pos: 0 }], lyric: "Somebody to hold" },
+        { chords: [{ chord: "C", pos: 0 }], lyric: "It's easy to say" },
+        { chords: [{ chord: "G", pos: 0 }], lyric: "But it's never the same" },
+        { chords: [{ chord: "Am", pos: 0 }], lyric: "I guess I kinda liked the way" },
+        { chords: [{ chord: "F", pos: 0 }], lyric: "you numbed all the pain" },
+      ]},
+      { type: "chorus", label: "Chorus", lines: [
+        { chords: [{ chord: "C", pos: 0 }], lyric: "Now the day bleeds" },
+        { chords: [{ chord: "G", pos: 0 }], lyric: "Into nightfall" },
+        { chords: [{ chord: "Am", pos: 0 }], lyric: "And you're not here" },
+        { chords: [{ chord: "F", pos: 0 }], lyric: "To get me through it all" },
+        { chords: [{ chord: "C", pos: 0 }], lyric: "I let my guard down" },
+        { chords: [{ chord: "G", pos: 0 }], lyric: "And then you pulled the rug" },
+        { chords: [{ chord: "Am", pos: 0 }], lyric: "I was getting kinda used to" },
+        { chords: [{ chord: "F", pos: 0 }], lyric: "being someone you loved" },
+      ]},
+    ]
+  },
+  {
+    id: "allofme",
+    title: "All of Me",
+    artist: "John Legend",
+    capo: 0,
+    difficulty: 2,
+    patternId: 5,
+    bpm: 63,
+    sections: [
+      { type: "info", label: "Info", lines: [
+        { chords: [], lyric: "No capo needed. Em C G D throughout. Slow tempo — good for practising smooth chord changes. The Am in the bridge is a nice easy addition." },
+      ]},
+      { type: "verse", label: "Verse", lines: [
+        { chords: [{ chord: "Em", pos: 0 }, { chord: "C", pos: 20 }], lyric: "What would I do without your smart mouth" },
+        { chords: [{ chord: "G", pos: 0 }, { chord: "D", pos: 20 }], lyric: "Drawing me in, and you kicking me out" },
+        { chords: [{ chord: "Em", pos: 0 }, { chord: "C", pos: 20 }], lyric: "Got my head spinning, no kidding" },
+        { chords: [{ chord: "G", pos: 0 }, { chord: "D", pos: 20 }], lyric: "I can't pin you down" },
+        { chords: [{ chord: "Em", pos: 0 }, { chord: "C", pos: 20 }], lyric: "What's going on in that beautiful mind" },
+        { chords: [{ chord: "G", pos: 0 }, { chord: "D", pos: 20 }], lyric: "I'm on your magical mystery ride" },
+        { chords: [{ chord: "Em", pos: 0 }, { chord: "C", pos: 20 }], lyric: "And I'm so dizzy, don't know what hit me" },
+        { chords: [{ chord: "G", pos: 0 }, { chord: "D", pos: 20 }], lyric: "But I'll be alright" },
+      ]},
+      { type: "chorus", label: "Chorus", lines: [
+        { chords: [{ chord: "G", pos: 0 }], lyric: "'Cause all of me" },
+        { chords: [{ chord: "Em", pos: 0 }], lyric: "loves all of you" },
+        { chords: [{ chord: "C", pos: 0 }], lyric: "Love your curves and all your edges" },
+        { chords: [{ chord: "D", pos: 0 }], lyric: "All your perfect imperfections" },
+        { chords: [{ chord: "G", pos: 0 }], lyric: "Give your all to me" },
+        { chords: [{ chord: "Em", pos: 0 }], lyric: "I'll give my all to you" },
+        { chords: [{ chord: "C", pos: 0 }], lyric: "You're my end and my beginning" },
+        { chords: [{ chord: "D", pos: 0 }], lyric: "Even when I lose I'm winning" },
+      ]},
+    ]
+  },
+  {
+    id: "countryroads",
+    title: "Take Me Home, Country Roads",
+    artist: "John Denver",
+    capo: 2,
+    difficulty: 1,
+    patternId: 4,
+    bpm: 82,
+    sections: [
+      { type: "info", label: "Info", lines: [
+        { chords: [], lyric: "Capo 2. Mostly open chords you already know. The F in the bridge is a barre — good practice! You can substitute Fmaj7 (xx3210) if F is still tricky." },
+      ]},
+      { type: "verse", label: "Verse 1", lines: [
+        { chords: [{ chord: "G", pos: 0 }, { chord: "Em", pos: 24 }], lyric: "Almost heaven, West Virginia" },
+        { chords: [{ chord: "D", pos: 0 }, { chord: "C", pos: 14 }, { chord: "G", pos: 24 }], lyric: "Blue Ridge Mountains, Shenandoah River" },
+        { chords: [{ chord: "G", pos: 0 }, { chord: "Em", pos: 24 }], lyric: "Life is old there, older than the trees" },
+        { chords: [{ chord: "D", pos: 0 }, { chord: "C", pos: 14 }, { chord: "G", pos: 24 }], lyric: "Younger than the mountains, growing like a breeze" },
+      ]},
+      { type: "chorus", label: "Chorus", lines: [
+        { chords: [{ chord: "G", pos: 0 }, { chord: "D", pos: 20 }], lyric: "Country roads, take me home" },
+        { chords: [{ chord: "Em", pos: 0 }, { chord: "C", pos: 20 }], lyric: "To the place I belong" },
+        { chords: [{ chord: "G", pos: 0 }, { chord: "D", pos: 20 }], lyric: "West Virginia, mountain mama" },
+        { chords: [{ chord: "C", pos: 0 }, { chord: "G", pos: 20 }], lyric: "Take me home, country roads" },
+      ]},
+      { type: "verse", label: "Verse 2", lines: [
+        { chords: [{ chord: "G", pos: 0 }, { chord: "Em", pos: 24 }], lyric: "All my memories gather round her" },
+        { chords: [{ chord: "D", pos: 0 }, { chord: "C", pos: 14 }, { chord: "G", pos: 24 }], lyric: "Miner's lady, stranger to blue water" },
+        { chords: [{ chord: "G", pos: 0 }, { chord: "Em", pos: 24 }], lyric: "Dark and dusty, painted on the sky" },
+        { chords: [{ chord: "D", pos: 0 }, { chord: "C", pos: 14 }, { chord: "G", pos: 24 }], lyric: "Misty taste of moonshine, teardrop in my eye" },
+      ]},
+      { type: "bridge", label: "Bridge", lines: [
+        { chords: [{ chord: "Em", pos: 0 }, { chord: "D", pos: 16 }], lyric: "I hear her voice in the mornin' hour she calls me" },
+        { chords: [{ chord: "G", pos: 0 }, { chord: "C", pos: 12 }, { chord: "G", pos: 24 }], lyric: "The radio reminds me of my home far away" },
+        { chords: [{ chord: "Em", pos: 0 }, { chord: "F", pos: 24 }], lyric: "And drivin' down the road I get a feelin' that I" },
+        { chords: [{ chord: "C", pos: 0 }, { chord: "G", pos: 14 }], lyric: "should have been home yesterday" },
+        { chords: [{ chord: "D", pos: 0 }], lyric: "yesterday" },
+      ]},
+    ]
+  },
+];
