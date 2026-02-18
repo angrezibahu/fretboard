@@ -514,7 +514,20 @@ function PracticeLog({ log, onAddEntry }) {
 // ─── MAIN APP ───
 export default function App() {
   const [tab, setTab] = useState("songs");
-  const [songs, setSongs] = useState(()=>loadData(STORAGE_KEYS.songs, null) || SAMPLE_SONGS);
+  const [songs, setSongs] = useState(() => {
+    const saved = loadData(STORAGE_KEYS.songs, null);
+    if (!saved) return SAMPLE_SONGS;
+    // Merge in any new sample songs not already present
+    const ids = new Set(saved.map(s => s.id));
+    const newSamples = SAMPLE_SONGS.filter(s => !ids.has(s.id));
+    // Also update existing sample songs (non-custom) with latest data
+    const merged = saved.map(s => {
+      if (s.custom) return s;
+      const updated = SAMPLE_SONGS.find(ss => ss.id === s.id);
+      return updated || s;
+    });
+    return [...merged, ...newSamples];
+  });
   const [practiceLog, setPracticeLog] = useState(()=>loadData(STORAGE_KEYS.practice, []));
   const [viewingSong, setViewingSong] = useState(null);
   const [editingSong, setEditingSong] = useState(null);
