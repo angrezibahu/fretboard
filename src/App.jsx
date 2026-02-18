@@ -192,8 +192,10 @@ function SongViewer({ song, onBack }) {
         <div style={{ display:"flex", gap:8, alignItems:"center", flexWrap:"wrap" }}>
           <div style={{ display:"flex", alignItems:"center", gap:4, background:"rgba(255,255,255,0.05)", borderRadius:8, padding:"4px 8px" }}>
             <span style={{ fontSize:11, color:"#888" }}>Scroll</span>
-            <input type="range" min={0} max={10} value={scrollSpeed} onChange={e=>setScrollSpeed(+e.target.value)} style={{ width:60 }} />
-            <button onClick={()=>setIsScrolling(!isScrolling)} style={{
+            <button onClick={()=>setScrollSpeed(s=>Math.max(1,s-1))} style={{ background:"none", border:"1px solid #555", borderRadius:4, color:"#e8d5b5", width:22, height:22, cursor:"pointer", fontSize:12 }}>-</button>
+            <span style={{ fontSize:11, fontFamily:"'JetBrains Mono',monospace", color:"#e8d5b5", minWidth:16, textAlign:"center" }}>{scrollSpeed}</span>
+            <button onClick={()=>setScrollSpeed(s=>Math.min(10,s+1))} style={{ background:"none", border:"1px solid #555", borderRadius:4, color:"#e8d5b5", width:22, height:22, cursor:"pointer", fontSize:12 }}>+</button>
+            <button onClick={()=>{ if(!isScrolling && scrollSpeed===0) setScrollSpeed(1); setIsScrolling(!isScrolling); }} style={{
               background:isScrolling?"#d46a6a":"#d4956a", border:"none", borderRadius:4,
               color:"#1a1612", fontSize:10, padding:"2px 8px", cursor:"pointer", fontWeight:700,
             }}>{isScrolling?"Stop":"Go"}</button>
