@@ -57,36 +57,41 @@ function StrummingVisualizer({ pattern, bpm, isPlaying, onToggle }) {
   const [currentBeat, setCurrentBeat] = useState(-1);
   const intervalRef = useRef(null);
   const audioCtx = useRef(null);
-  const playClick = useCallback((accent) => {
+  const playClick = useCallback((beatType, isFirst) => {
     if (!audioCtx.current) audioCtx.current = new (window.AudioContext || window.webkitAudioContext)();
     const ctx = audioCtx.current;
     const osc = ctx.createOscillator();
     const gain = ctx.createGain();
     osc.connect(gain); gain.connect(ctx.destination);
-    osc.frequency.value = accent ? 1000 : 700;
-    gain.gain.setValueAtTime(accent ? 0.15 : 0.08, ctx.currentTime);
+    osc.frequency.value = isFirst ? 1100 : beatType === "D" ? 880 : beatType === "X" ? 440 : 660;
+    const vol = isFirst ? 0.15 : beatType === "D" ? 0.12 : beatType === "X" ? 0.10 : 0.07;
+    gain.gain.setValueAtTime(vol, ctx.currentTime);
     gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.08);
     osc.start(ctx.currentTime); osc.stop(ctx.currentTime + 0.08);
   }, []);
   useEffect(() => {
     if (isPlaying) {
-      const beatMs = (60000/bpm) / (pattern.pattern.length/4);
+      const beatsInPattern = pattern.beats || 4;
+      const beatMs = (60000 / bpm) * (beatsInPattern / pattern.pattern.length);
       let beat = 0;
       setCurrentBeat(0);
+      if (pattern.pattern[0] !== "_") playClick(pattern.pattern[0], true);
       intervalRef.current = setInterval(() => {
-        beat = (beat+1) % pattern.pattern.length;
+        beat = (beat + 1) % pattern.pattern.length;
         setCurrentBeat(beat);
-        if (pattern.pattern[beat] !== "_") playClick(pattern.pattern[beat] === "D");
+        const beatType = pattern.pattern[beat];
+        if (beatType !== "_") playClick(beatType, beat === 0);
       }, beatMs);
-      playClick(true);
     } else {
       clearInterval(intervalRef.current);
       setCurrentBeat(-1);
     }
     return () => clearInterval(intervalRef.current);
   }, [isPlaying, bpm, pattern, playClick]);
+  const beatsInPattern = pattern.beats || 4;
+  const slotsPerBeat = pattern.pattern.length / beatsInPattern;
   return (
-    <div style={{ display:"flex", flexDirection:"column", gap:12, alignItems:"center" }}>
+    <div style={{ display:"flex", flexDirection:"column", gap:8, alignItems:"center" }}>
       <div style={{ display:"flex", gap:4, alignItems:"center" }}>
         {pattern.pattern.map((beat,i) => {
           const isActive = i===currentBeat;
@@ -109,10 +114,22 @@ function StrummingVisualizer({ pattern, bpm, isPlaying, onToggle }) {
           );
         })}
       </div>
+      <div style={{ display:"flex", gap:4 }}>
+        {pattern.pattern.map((_,i) => {
+          const isOnBeat = i % slotsPerBeat === 0;
+          const beatNum = Math.floor(i / slotsPerBeat) + 1;
+          return (
+            <div key={i} style={{ width:40, textAlign:"center", fontSize:9, color: isOnBeat ? "#666" : "#3a3a3a", fontFamily:"'JetBrains Mono',monospace" }}>
+              {isOnBeat ? beatNum : "+"}
+            </div>
+          );
+        })}
+      </div>
       <button onClick={onToggle} style={{
         padding:"8px 24px", borderRadius:20, border:"none", cursor:"pointer",
         background:isPlaying?"#d46a6a":"#d4956a", color:"#1a1612",
         fontWeight:700, fontSize:14, fontFamily:"'JetBrains Mono',monospace",
+        marginTop:4,
       }}>{isPlaying?"■ Stop":"▶ Play"}</button>
     </div>
   );
@@ -134,28 +151,31 @@ function SongViewer({ song, onBack }) {
   const [metBpm, setMetBpm] = useState(song.bpm || pattern.bpm);
   const metInterval = useRef(null);
   const metAudio = useRef(null);
-  const metClick = useCallback((accent) => {
+  const metClick = useCallback((beatType, isFirst) => {
     if (!metAudio.current) metAudio.current = new (window.AudioContext || window.webkitAudioContext)();
     const ctx = metAudio.current;
     const osc = ctx.createOscillator();
     const gain = ctx.createGain();
     osc.connect(gain); gain.connect(ctx.destination);
-    osc.frequency.value = accent ? 1000 : 700;
-    gain.gain.setValueAtTime(accent ? 0.15 : 0.08, ctx.currentTime);
+    osc.frequency.value = isFirst ? 1100 : beatType === "D" ? 880 : beatType === "X" ? 440 : 660;
+    const vol = isFirst ? 0.15 : beatType === "D" ? 0.12 : beatType === "X" ? 0.10 : 0.07;
+    gain.gain.setValueAtTime(vol, ctx.currentTime);
     gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.08);
     osc.start(ctx.currentTime); osc.stop(ctx.currentTime + 0.08);
   }, []);
   useEffect(() => {
     if (metPlaying) {
-      const beatMs = (60000 / metBpm) / (pattern.pattern.length / 4);
+      const beatsInPattern = pattern.beats || 4;
+      const beatMs = (60000 / metBpm) * (beatsInPattern / pattern.pattern.length);
       let beat = 0;
       setMetBeat(0);
+      if (pattern.pattern[0] !== "_") metClick(pattern.pattern[0], true);
       metInterval.current = setInterval(() => {
         beat = (beat + 1) % pattern.pattern.length;
         setMetBeat(beat);
-        if (pattern.pattern[beat] !== "_") metClick(pattern.pattern[beat] === "D");
+        const beatType = pattern.pattern[beat];
+        if (beatType !== "_") metClick(beatType, beat === 0);
       }, beatMs);
-      metClick(true);
     } else {
       clearInterval(metInterval.current);
       setMetBeat(-1);
@@ -212,6 +232,7 @@ function SongViewer({ song, onBack }) {
           <div style={{ display:"flex", alignItems:"center", justifyContent:"space-between", marginBottom:6 }}>
             <div style={{ display:"flex", alignItems:"center", gap:6 }}>
               <span style={{ fontSize:11, fontWeight:700, color:"#d4956a" }}>{pattern.name}</span>
+              <span style={{ fontSize:9, color:"#555", background:"rgba(255,255,255,0.05)", padding:"1px 4px", borderRadius:3 }}>{(pattern.beats||4)===3?"3/4":"4/4"}</span>
               <span style={{ fontSize:10, color:"#666" }}>strum</span>
             </div>
             <div style={{ display:"flex", alignItems:"center", gap:4 }}>
@@ -632,8 +653,10 @@ export default function App() {
         {/* STRUM */}
         {tab === "strum" && (
           <div style={{ padding:16, display:"flex", flexDirection:"column", gap:16 }}>
-            <div style={{ fontSize:12, color:"#888", lineHeight:1.6, background:"rgba(255,255,255,0.03)", borderRadius:12, padding:12, border:"1px solid rgba(255,255,255,0.06)" }}>
-              <strong style={{ color:"#d4956a" }}>Your approach:</strong> Pick a pattern. Play it on one chord (Em is easiest) until your strumming hand is on autopilot. Only then try changing chords. Your trumpet brain wants to sync both hands — resist that. The strum must be independent.
+            <div style={{ fontSize:12, color:"#888", lineHeight:1.7, background:"rgba(255,255,255,0.03)", borderRadius:12, padding:12, border:"1px solid rgba(255,255,255,0.06)" }}>
+              <strong style={{ color:"#d4956a" }}>Your approach:</strong> Pick a pattern. Play it on one chord (Em is easiest) until your strumming hand runs on autopilot. Only then try changing chords. Your trumpet brain wants to sync both hands — resist that. The strum must be independent.
+              <br /><br />
+              <strong style={{ color:"#d4956a" }}>Three rules:</strong> (1) Keep your arm swinging on every 8th note, even when you skip a hit — ghost the air between strums. (2) Count aloud: <span style={{ color:"#e8d5b5", fontFamily:"'JetBrains Mono',monospace" }}>1 + 2 + 3 + 4 +</span>. (3) Start at 60% of the suggested BPM. Clean and slow beats messy and fast, every time.
             </div>
             <div style={{ display:"flex", flexDirection:"column", gap:6 }}>
               {STRUMMING_PATTERNS.map(p=>(
@@ -644,7 +667,10 @@ export default function App() {
                     background:strumPattern.id===p.id?"rgba(212,149,106,0.08)":"rgba(255,255,255,0.02)",
                   }}>
                   <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center" }}>
-                    <span style={{ fontSize:14, fontWeight:700, color:strumPattern.id===p.id?"#d4956a":"#e8d5b5" }}>{p.name}</span>
+                    <div style={{ display:"flex", alignItems:"center", gap:6 }}>
+                      <span style={{ fontSize:14, fontWeight:700, color:strumPattern.id===p.id?"#d4956a":"#e8d5b5" }}>{p.name}</span>
+                      {(p.beats||4)===3 && <span style={{ fontSize:9, color:"#6abed4", background:"rgba(106,190,212,0.1)", padding:"1px 5px", borderRadius:3, fontFamily:"'JetBrains Mono',monospace" }}>3/4</span>}
+                    </div>
                     <div style={{ display:"flex", gap:2 }}>
                       {[1,2,3,4].map(d=>(<div key={d} style={{ width:5, height:5, borderRadius:3, background:d<=p.difficulty?"#d4956a":"rgba(255,255,255,0.08)" }} />))}
                     </div>
@@ -655,7 +681,10 @@ export default function App() {
             </div>
             <div style={{ background:"rgba(255,255,255,0.03)", borderRadius:12, padding:16, border:"1px solid rgba(255,255,255,0.06)" }}>
               <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:16 }}>
-                <span style={{ fontSize:16, fontWeight:700 }}>{strumPattern.name}</span>
+                <div style={{ display:"flex", alignItems:"center", gap:8 }}>
+                  <span style={{ fontSize:16, fontWeight:700 }}>{strumPattern.name}</span>
+                  <span style={{ fontSize:10, color:(strumPattern.beats||4)===3?"#6abed4":"#666", background:(strumPattern.beats||4)===3?"rgba(106,190,212,0.1)":"rgba(255,255,255,0.05)", padding:"2px 6px", borderRadius:4, fontFamily:"'JetBrains Mono',monospace" }}>{(strumPattern.beats||4)===3?"3/4":"4/4"}</span>
+                </div>
                 <div style={{ display:"flex", alignItems:"center", gap:6 }}>
                   <span style={{ fontSize:11, color:"#888" }}>BPM</span>
                   <button onClick={()=>setStrumBpm(b=>Math.max(40,b-5))} style={{ background:"none", border:"1px solid #555", borderRadius:4, color:"#e8d5b5", width:24, height:24, cursor:"pointer" }}>-</button>
@@ -664,6 +693,11 @@ export default function App() {
                 </div>
               </div>
               <StrummingVisualizer pattern={strumPattern} bpm={strumBpm} isPlaying={isPlaying} onToggle={()=>setIsPlaying(!isPlaying)} />
+              {strumPattern.tip && (
+                <div style={{ marginTop:14, fontSize:11, color:"#6abed4", lineHeight:1.6, background:"rgba(106,190,212,0.05)", borderRadius:8, padding:"8px 12px", border:"1px solid rgba(106,190,212,0.1)" }}>
+                  <strong>Tip:</strong> {strumPattern.tip}
+                </div>
+              )}
             </div>
           </div>
         )}
