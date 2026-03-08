@@ -278,21 +278,32 @@ function SongViewer({ song, onBack }) {
           <div key={si} style={{ marginBottom:24 }}>
             <div style={{ fontSize:11, fontWeight:700, textTransform:"uppercase", letterSpacing:2, color:sectionColors[section.type]||"#888", marginBottom:8 }}>{section.label}</div>
             {section.lines.map((line,li) => (
-              <div key={li} style={{ marginBottom:6, fontFamily:"'JetBrains Mono',monospace" }}>
-                <div style={{ height:20, position:"relative", fontSize:13, fontWeight:700 }}>
-                  {line.chords.map((c,ci) => {
-                    const displayed = transposeChord(c.chord);
-                    return (
-                      <span key={ci} onClick={()=>setShowChordPopup(showChordPopup===displayed?null:displayed)}
-                        style={{
-                          position:"absolute", left:`${c.pos}ch`,
-                          color:CHORD_DIAGRAMS[displayed]?.barreAt?"#d46a6a":"#d4956a",
-                          cursor:"pointer", textDecoration:"underline", textDecorationStyle:"dotted", textUnderlineOffset:2,
-                        }}>{displayed}</span>
-                    );
-                  })}
-                </div>
-                <div style={{ fontSize:14, color:"#ccc", lineHeight:1.6 }}>{line.lyric}</div>
+              <div key={li} style={{ marginBottom: line.tab ? 12 : 6, fontFamily:"'JetBrains Mono',monospace" }}>
+                {line.tab ? (
+                  <>
+                    {line.tab.map((tabStr, ti) => (
+                      <div key={ti} style={{ fontSize:11, color:"#b8a88a", lineHeight:1.3, whiteSpace:"pre" }}>{tabStr}</div>
+                    ))}
+                    {line.lyric && <div style={{ fontSize:13, color:"#ccc", lineHeight:1.6, marginTop:4, fontStyle:"italic" }}>{line.lyric}</div>}
+                  </>
+                ) : (
+                  <>
+                    <div style={{ height:20, position:"relative", fontSize:13, fontWeight:700 }}>
+                      {line.chords.map((c,ci) => {
+                        const displayed = transposeChord(c.chord);
+                        return (
+                          <span key={ci} onClick={()=>setShowChordPopup(showChordPopup===displayed?null:displayed)}
+                            style={{
+                              position:"absolute", left:`${c.pos}ch`,
+                              color:CHORD_DIAGRAMS[displayed]?.barreAt?"#d46a6a":"#d4956a",
+                              cursor:"pointer", textDecoration:"underline", textDecorationStyle:"dotted", textUnderlineOffset:2,
+                            }}>{displayed}</span>
+                        );
+                      })}
+                    </div>
+                    <div style={{ fontSize:14, color:"#ccc", lineHeight:1.6 }}>{line.lyric}</div>
+                  </>
+                )}
               </div>
             ))}
           </div>
