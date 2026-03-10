@@ -15,10 +15,22 @@
       ::-webkit-scrollbar { width: 4px; }
       ::-webkit-scrollbar-track { background: transparent; }
       ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 2px; }
+      #app-loading {
+        display: flex; flex-direction: column; align-items: center; justify-content: center;
+        height: 100dvh; gap: 12px; color: #e8d5b5; font-family: sans-serif;
+      }
+      #app-loading .logo { font-size: 22px; font-weight: 800; letter-spacing: -0.5px; }
+      #app-loading .logo span { color: #d4956a; }
+      #app-loading .sub { font-size: 10px; color: #555; letter-spacing: 3px; text-transform: uppercase; }
+      #root:not(:empty) + #app-loading, #root:not(:empty) ~ #app-loading { display: none; }
     </style>
   </head>
   <body>
     <div id="root"></div>
+    <div id="app-loading">
+      <div class="logo"><span>fret</span>board</div>
+      <div class="sub">guitar practice companion</div>
+    </div>
     <script type="module" src="/src/main.jsx"></script>
   </body>
 </html>
